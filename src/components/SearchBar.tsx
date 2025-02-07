@@ -7,7 +7,7 @@ const SearchBar = () => {
 
   return (
     <div className="w-full max-w-3xl mx-auto">
-      <div className="relative glass-card rounded-full p-2 px-6">
+      <div className="relative glass-card rounded-full p-2 px-6 custom-transition">
         <div className="flex items-center">
           <Search className="h-5 w-5 text-gray-400" />
           <input

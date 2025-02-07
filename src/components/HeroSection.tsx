@@ -14,7 +14,7 @@ const HeroSection = () => {
         <p className="text-xl mb-8 text-gray-700 max-w-2xl mx-auto animate-slide-in">
           Discover premium properties and vehicles in Mauritania's economic capital
         </p>
-        <div className="animate-slide-in" style={{ animationDelay: '0.2s' }}>
+        <div className="animate-slide-in custom-transition" style={{ animationDelay: '0.2s' }}>
           <SearchBar />
         </div>
       </div>
