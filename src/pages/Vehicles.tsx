@@ -1,7 +1,23 @@
 
-import { Car, Search, Calendar, MapPin } from 'lucide-react';
+import { Car, Calendar, MapPin } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { Link } from 'react-router-dom';
 
 const Vehicles = () => {
+  const { data: vehicles, isLoading } = useQuery({
+    queryKey: ['vehicles'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('vehicles')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return data;
+    },
+  });
+
   return (
     <div className="min-h-screen py-8">
       <div className="container mx-auto px-4">
@@ -69,44 +85,55 @@ const Vehicles = () => {
           
           {/* Listings Grid */}
           <div className="lg:w-3/4">
-            <div className="grid md:grid-cols-2 gap-6">
-              {/* Sample Vehicle Card */}
-              <div className="glass-card rounded-xl overflow-hidden hover-effect">
-                <div className="relative h-48">
-                  <img 
-                    src="/placeholder.svg" 
-                    alt="Vehicle" 
-                    className="w-full h-full object-cover"
-                  />
-                  <span className="absolute top-2 right-2 bg-primary text-white px-3 py-1 rounded-full text-sm">
-                    Used
-                  </span>
-                </div>
-                
-                <div className="p-4">
-                  <h3 className="text-xl font-semibold mb-2">Toyota Camry</h3>
-                  <p className="text-gray-600 mb-4">2022 Model</p>
-                  
-                  <div className="flex items-center gap-4 text-sm text-gray-600 mb-4">
-                    <div className="flex items-center gap-1">
-                      <Calendar className="h-4 w-4" />
-                      <span>2022</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <MapPin className="h-4 w-4" />
-                      <span>50,000 km</span>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center justify-between">
-                    <span className="text-2xl font-bold text-primary">$15,000</span>
-                    <button className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-dark">
-                      View Details
-                    </button>
-                  </div>
-                </div>
+            {isLoading ? (
+              <div className="flex justify-center">
+                <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
               </div>
-            </div>
+            ) : (
+              <div className="grid md:grid-cols-2 gap-6">
+                {vehicles?.map((vehicle) => (
+                  <Link
+                    key={vehicle.id}
+                    to={`/vehicles/${vehicle.id}`}
+                    className="glass-card rounded-xl overflow-hidden hover-effect transition-transform hover:-translate-y-1"
+                  >
+                    <div className="relative h-48">
+                      <img 
+                        src={vehicle.images?.[0] || "/placeholder.svg"}
+                        alt={vehicle.title}
+                        className="w-full h-full object-cover"
+                      />
+                      <span className="absolute top-2 right-2 bg-primary text-white px-3 py-1 rounded-full text-sm">
+                        {vehicle.condition}
+                      </span>
+                    </div>
+                    
+                    <div className="p-4">
+                      <h3 className="text-xl font-semibold mb-2">{vehicle.title}</h3>
+                      
+                      <div className="flex items-center gap-4 text-sm text-gray-600 mb-4">
+                        <div className="flex items-center gap-1">
+                          <Calendar className="h-4 w-4" />
+                          <span>{vehicle.year}</span>
+                        </div>
+                        {vehicle.mileage && (
+                          <div className="flex items-center gap-1">
+                            <MapPin className="h-4 w-4" />
+                            <span>{vehicle.mileage.toLocaleString()} km</span>
+                          </div>
+                        )}
+                      </div>
+                      
+                      <div className="flex items-center justify-between">
+                        <span className="text-2xl font-bold text-primary">
+                          ${vehicle.price.toLocaleString()}
+                        </span>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>

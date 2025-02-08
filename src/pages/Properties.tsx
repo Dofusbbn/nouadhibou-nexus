@@ -1,7 +1,23 @@
 
 import { Home as HomeIcon, Search, BedDouble, Bath, MapPin } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { Link } from 'react-router-dom';
 
 const Properties = () => {
+  const { data: properties, isLoading } = useQuery({
+    queryKey: ['properties'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('properties')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return data;
+    },
+  });
+
   return (
     <div className="min-h-screen py-8">
       <div className="container mx-auto px-4">
@@ -60,48 +76,64 @@ const Properties = () => {
           
           {/* Listings Grid */}
           <div className="lg:w-3/4">
-            <div className="grid md:grid-cols-2 gap-6">
-              {/* Sample Property Card */}
-              <div className="glass-card rounded-xl overflow-hidden hover-effect">
-                <div className="relative h-48">
-                  <img 
-                    src="/placeholder.svg" 
-                    alt="Property" 
-                    className="w-full h-full object-cover"
-                  />
-                  <span className="absolute top-2 right-2 bg-primary text-white px-3 py-1 rounded-full text-sm">
-                    For Sale
-                  </span>
-                </div>
-                
-                <div className="p-4">
-                  <h3 className="text-xl font-semibold mb-2">Modern Apartment</h3>
-                  <p className="text-gray-600 mb-4">Nouadhibou City Center</p>
-                  
-                  <div className="flex items-center gap-4 text-sm text-gray-600 mb-4">
-                    <div className="flex items-center gap-1">
-                      <BedDouble className="h-4 w-4" />
-                      <span>3 Beds</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Bath className="h-4 w-4" />
-                      <span>2 Baths</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <MapPin className="h-4 w-4" />
-                      <span>150 m²</span>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center justify-between">
-                    <span className="text-2xl font-bold text-primary">$250,000</span>
-                    <button className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-dark">
-                      View Details
-                    </button>
-                  </div>
-                </div>
+            {isLoading ? (
+              <div className="flex justify-center">
+                <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
               </div>
-            </div>
+            ) : (
+              <div className="grid md:grid-cols-2 gap-6">
+                {properties?.map((property) => (
+                  <Link
+                    key={property.id}
+                    to={`/properties/${property.id}`}
+                    className="glass-card rounded-xl overflow-hidden hover-effect transition-transform hover:-translate-y-1"
+                  >
+                    <div className="relative h-48">
+                      <img 
+                        src={property.images?.[0] || "/placeholder.svg"}
+                        alt={property.title}
+                        className="w-full h-full object-cover"
+                      />
+                      <span className="absolute top-2 right-2 bg-primary text-white px-3 py-1 rounded-full text-sm">
+                        {property.status}
+                      </span>
+                    </div>
+                    
+                    <div className="p-4">
+                      <h3 className="text-xl font-semibold mb-2">{property.title}</h3>
+                      <p className="text-gray-600 mb-4">{property.location}</p>
+                      
+                      <div className="flex items-center gap-4 text-sm text-gray-600 mb-4">
+                        {property.bedrooms && (
+                          <div className="flex items-center gap-1">
+                            <BedDouble className="h-4 w-4" />
+                            <span>{property.bedrooms} Beds</span>
+                          </div>
+                        )}
+                        {property.bathrooms && (
+                          <div className="flex items-center gap-1">
+                            <Bath className="h-4 w-4" />
+                            <span>{property.bathrooms} Baths</span>
+                          </div>
+                        )}
+                        {property.area && (
+                          <div className="flex items-center gap-1">
+                            <MapPin className="h-4 w-4" />
+                            <span>{property.area} m²</span>
+                          </div>
+                        )}
+                      </div>
+                      
+                      <div className="flex items-center justify-between">
+                        <span className="text-2xl font-bold text-primary">
+                          ${property.price.toLocaleString()}
+                        </span>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>
