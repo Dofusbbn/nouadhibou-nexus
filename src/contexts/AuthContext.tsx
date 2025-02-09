@@ -3,10 +3,19 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useToast } from '@/components/ui/use-toast';
 import { Session, User } from '@supabase/supabase-js';
+import { useNavigate } from 'react-router-dom';
+
+interface Profile {
+  id: string;
+  username: string | null;
+  full_name: string | null;
+  avatar_url: string | null;
+}
 
 interface AuthContextType {
   session: Session | null;
   user: User | null;
+  profile: Profile | null;
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
@@ -17,23 +26,48 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
+      if (session?.user) {
+        fetchProfile(session.user.id);
+      }
     });
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
+      if (session?.user) {
+        fetchProfile(session.user.id);
+      } else {
+        setProfile(null);
+      }
     });
 
     return () => subscription.unsubscribe();
   }, []);
+
+  const fetchProfile = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+
+      if (error) throw error;
+      setProfile(data);
+    } catch (error: any) {
+      console.error('Error fetching profile:', error.message);
+    }
+  };
 
   const signIn = async (email: string, password: string) => {
     try {
@@ -43,6 +77,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         title: "Success",
         description: "Successfully signed in",
       });
+      navigate('/');
     } catch (error: any) {
       toast({
         title: "Error",
@@ -77,6 +112,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         title: "Success",
         description: "Successfully signed out",
       });
+      navigate('/auth');
     } catch (error: any) {
       toast({
         title: "Error",
@@ -87,7 +123,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ session, user, signIn, signUp, signOut }}>
+    <AuthContext.Provider value={{ session, user, profile, signIn, signUp, signOut }}>
       {children}
     </AuthContext.Provider>
   );
