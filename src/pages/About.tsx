@@ -1,5 +1,5 @@
 
-import { Building, Users, Clock, Trophy } from 'lucide-react';
+import { Building, Users, Clock, Trophy, Mail } from 'lucide-react';
 
 const About = () => {
   return (
