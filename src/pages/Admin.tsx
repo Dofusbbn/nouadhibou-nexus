@@ -2,7 +2,7 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useRole } from '@/hooks/useRole';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/use-toast';
@@ -15,10 +15,14 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { Eye, Star, Trash2, Edit } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export default function Admin() {
   const { isAdmin, isLoading: roleLoading } = useRole();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     if (!roleLoading && !isAdmin) {
@@ -47,6 +51,54 @@ export default function Admin() {
         .order('created_at', { ascending: false });
       if (error) throw error;
       return data;
+    },
+  });
+
+  const deletePropertyMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from('properties')
+        .delete()
+        .eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-properties'] });
+      toast({
+        title: "Success",
+        description: "Property deleted successfully",
+      });
+    },
+    onError: (error) => {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to delete property",
+      });
+    },
+  });
+
+  const deleteVehicleMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from('vehicles')
+        .delete()
+        .eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-vehicles'] });
+      toast({
+        title: "Success",
+        description: "Vehicle deleted successfully",
+      });
+    },
+    onError: (error) => {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to delete vehicle",
+      });
     },
   });
 
@@ -115,12 +167,48 @@ export default function Admin() {
                     <TableCell>{property.status}</TableCell>
                     <TableCell>{property.is_featured ? 'Yes' : 'No'}</TableCell>
                     <TableCell>
-                      <Button
-                        variant="outline"
-                        onClick={() => toggleFeatured('property', property.id, property.is_featured)}
-                      >
-                        {property.is_featured ? 'Unfeature' : 'Feature'}
-                      </Button>
+                      <div className="flex items-center gap-2">
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={() => toggleFeatured('property', property.id, property.is_featured)}
+                        >
+                          <Star className={`h-4 w-4 ${property.is_featured ? 'fill-yellow-400' : ''}`} />
+                        </Button>
+                        <Link to={`/properties/${property.id}`}>
+                          <Button variant="outline" size="icon">
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                        </Link>
+                        <Link to={`/admin/properties/edit/${property.id}`}>
+                          <Button variant="outline" size="icon">
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                        </Link>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button variant="outline" size="icon">
+                              <Trash2 className="h-4 w-4 text-red-500" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Delete Property</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Are you sure you want to delete this property? This action cannot be undone.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={() => deletePropertyMutation.mutate(property.id)}
+                              >
+                                Delete
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -151,12 +239,48 @@ export default function Admin() {
                     <TableCell>{vehicle.condition}</TableCell>
                     <TableCell>{vehicle.is_featured ? 'Yes' : 'No'}</TableCell>
                     <TableCell>
-                      <Button
-                        variant="outline"
-                        onClick={() => toggleFeatured('vehicle', vehicle.id, vehicle.is_featured)}
-                      >
-                        {vehicle.is_featured ? 'Unfeature' : 'Feature'}
-                      </Button>
+                      <div className="flex items-center gap-2">
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={() => toggleFeatured('vehicle', vehicle.id, vehicle.is_featured)}
+                        >
+                          <Star className={`h-4 w-4 ${vehicle.is_featured ? 'fill-yellow-400' : ''}`} />
+                        </Button>
+                        <Link to={`/vehicles/${vehicle.id}`}>
+                          <Button variant="outline" size="icon">
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                        </Link>
+                        <Link to={`/admin/vehicles/edit/${vehicle.id}`}>
+                          <Button variant="outline" size="icon">
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                        </Link>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button variant="outline" size="icon">
+                              <Trash2 className="h-4 w-4 text-red-500" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Delete Vehicle</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Are you sure you want to delete this vehicle? This action cannot be undone.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={() => deleteVehicleMutation.mutate(vehicle.id)}
+                              >
+                                Delete
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}
