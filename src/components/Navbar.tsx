@@ -1,12 +1,14 @@
 
-import { Home, Car, LogIn, LogOut, User } from 'lucide-react';
+import { Home, Car, LogIn, LogOut, User, Shield } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { useRole } from '@/hooks/useRole';
 import { Button } from '@/components/ui/button';
 
 const Navbar = () => {
   const location = useLocation();
   const { user, signOut } = useAuth();
+  const { isAdmin } = useRole();
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -27,6 +29,14 @@ const Navbar = () => {
       icon: Car,
     },
   ];
+
+  if (isAdmin) {
+    navItems.push({
+      path: '/admin',
+      label: 'Admin',
+      icon: Shield,
+    });
+  }
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-200">
