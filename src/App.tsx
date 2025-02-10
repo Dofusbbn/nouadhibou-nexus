@@ -1,7 +1,6 @@
 
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
-import ErrorBoundary from "@/components/ErrorBoundary";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
@@ -20,15 +19,11 @@ import Admin from "./pages/Admin";
 
 const queryClient = new QueryClient();
 
-import ErrorBoundary from "./components/ErrorBoundary";
-
 const App = () => (
-  <ErrorBoundary>
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <AuthProvider>
-          <TooltipProvider>
-            <OfflineDetector />
+  <QueryClientProvider client={queryClient}>
+    <BrowserRouter>
+      <AuthProvider>
+        <TooltipProvider>
           <Toaster />
           <Sonner />
           <div className="flex flex-col min-h-screen">
@@ -52,7 +47,6 @@ const App = () => (
       </AuthProvider>
     </BrowserRouter>
   </QueryClientProvider>
-  </ErrorBoundary>
 );
 
 export default App;
