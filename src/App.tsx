@@ -27,8 +27,8 @@ const App = () => (
           <Toaster />
           <Sonner />
           <div className="flex flex-col min-h-screen">
-            {location.pathname !== '/auth' && <Navbar />}
-            <main className={`flex-grow ${location.pathname !== '/auth' ? 'pt-16' : ''}`}>
+            {window.location.pathname !== '/auth' && <Navbar />}
+            <main className={`flex-grow ${window.location.pathname !== '/auth' ? 'pt-16' : ''}`}>
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/about" element={<About />} />
@@ -41,7 +41,7 @@ const App = () => (
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </main>
-            {location.pathname !== '/auth' && <Footer />}
+            {window.location.pathname !== '/auth' && <Footer />}
           </div>
         </TooltipProvider>
       </AuthProvider>
