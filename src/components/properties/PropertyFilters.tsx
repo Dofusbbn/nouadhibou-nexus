@@ -1,14 +1,6 @@
 
-import { Search, Filter } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { type PropertyType } from '@/types';
-import { Button } from "@/components/ui/button";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
 
 interface PropertyFiltersProps {
   searchTerm: string;
@@ -54,19 +46,8 @@ const PropertyFilters = ({
   };
 
   return (
-    <div className="lg:w-1/4 w-full">
-      <Sheet>
-        <SheetTrigger asChild className="lg:hidden block mb-4">
-          <Button variant="outline" className="w-full">
-            <Filter className="mr-2 h-4 w-4" />
-            Filters
-          </Button>
-        </SheetTrigger>
-        <SheetContent side="left" className="w-full sm:w-[340px]">
-          <SheetHeader className="mb-4">
-            <SheetTitle>Filters</SheetTitle>
-          </SheetHeader>
-          <div className="glass-card p-6 rounded-xl lg:block">
+    <div className="lg:w-1/4">
+      <div className="glass-card p-6 rounded-xl">
         <h2 className="text-xl font-semibold mb-4">Filters</h2>
         
         <div className="space-y-4">
@@ -149,10 +130,6 @@ const PropertyFilters = ({
             </select>
           </div>
         </div>
-        </SheetContent>
-      </Sheet>
-      <div className="glass-card p-6 rounded-xl hidden lg:block">
-        {/* Original desktop filters content */}
       </div>
     </div>
   );

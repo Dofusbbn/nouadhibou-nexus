@@ -53,10 +53,8 @@ const PropertyDetail = () => {
         </Button>
 
         <div className="glass-card rounded-xl overflow-hidden">
-          <Carousel 
-            images={property.images || ['/placeholder.svg']}
-            className="md:h-96 h-64"
-          />
+          <div className="relative h-96">
+            <img
               src={property.images?.[0] || '/placeholder.svg'}
               alt={property.title}
               className="w-full h-full object-cover"
