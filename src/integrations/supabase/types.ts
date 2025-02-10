@@ -49,6 +49,7 @@ export type Database = {
           location: string
           price: number
           property_type: Database["public"]["Enums"]["property_type"]
+          search_vector: unknown | null
           status: string
           title: string
           updated_at: string | null
@@ -66,6 +67,7 @@ export type Database = {
           location: string
           price: number
           property_type: Database["public"]["Enums"]["property_type"]
+          search_vector?: unknown | null
           status?: string
           title: string
           updated_at?: string | null
@@ -83,12 +85,52 @@ export type Database = {
           location?: string
           price?: number
           property_type?: Database["public"]["Enums"]["property_type"]
+          search_vector?: unknown | null
           status?: string
           title?: string
           updated_at?: string | null
           user_id?: string | null
         }
         Relationships: []
+      }
+      user_favorites: {
+        Row: {
+          created_at: string
+          id: string
+          property_id: string | null
+          user_id: string
+          vehicle_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          property_id?: string | null
+          user_id: string
+          vehicle_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          property_id?: string | null
+          user_id?: string
+          vehicle_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_favorites_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_favorites_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
@@ -123,6 +165,7 @@ export type Database = {
           mileage: number | null
           model: string
           price: number
+          search_vector: unknown | null
           title: string
           updated_at: string | null
           user_id: string | null
@@ -140,6 +183,7 @@ export type Database = {
           mileage?: number | null
           model: string
           price: number
+          search_vector?: unknown | null
           title: string
           updated_at?: string | null
           user_id?: string | null
@@ -157,6 +201,7 @@ export type Database = {
           mileage?: number | null
           model?: string
           price?: number
+          search_vector?: unknown | null
           title?: string
           updated_at?: string | null
           user_id?: string | null
