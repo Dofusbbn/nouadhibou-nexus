@@ -18,6 +18,12 @@ const Vehicles = () => {
     maxPrice: '',
     condition: '',
     year: '',
+    brand: '',
+    transmission: '',
+    fuelType: '',
+    minMileage: '',
+    maxMileage: '',
+    color: '',
   });
   const [sortBy, setSortBy] = useState<'price_asc' | 'price_desc' | 'newest'>('newest');
   const { searchTerm, setSearchTerm } = useSearch('vehicles');
@@ -53,6 +59,24 @@ const Vehicles = () => {
       if (filters.year) {
         query = query.eq('year', parseInt(filters.year));
       }
+      if (filters.brand) {
+        query = query.ilike('brand', `%${filters.brand}%`);
+      }
+      if (filters.transmission) {
+        query = query.eq('transmission', filters.transmission);
+      }
+      if (filters.fuelType) {
+        query = query.eq('fuel_type', filters.fuelType);
+      }
+      if (filters.minMileage) {
+        query = query.gte('mileage', parseFloat(filters.minMileage));
+      }
+      if (filters.maxMileage) {
+        query = query.lte('mileage', parseFloat(filters.maxMileage));
+      }
+      if (filters.color) {
+        query = query.ilike('color', `%${filters.color}%`);
+      }
 
       // Apply sorting
       switch (sortBy) {
@@ -83,6 +107,21 @@ const Vehicles = () => {
       return { data, count };
     },
   });
+
+  const validateMileageRange = (min: string, max: string) => {
+    const minMileage = parseFloat(min);
+    const maxMileage = parseFloat(max);
+    
+    if (minMileage && maxMileage && minMileage > maxMileage) {
+      toast({
+        title: "Invalid mileage range",
+        description: "Minimum mileage cannot be greater than maximum mileage",
+        variant: "destructive",
+      });
+      return false;
+    }
+    return true;
+  };
 
   const validatePriceRange = (min: string, max: string) => {
     const minPrice = parseFloat(min);
@@ -116,6 +155,7 @@ const Vehicles = () => {
             sortBy={sortBy}
             setSortBy={setSortBy}
             validatePriceRange={validatePriceRange}
+            validateMileageRange={validateMileageRange}
           />
           
           <div className="lg:w-3/4">
