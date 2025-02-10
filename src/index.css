@@ -4,6 +4,22 @@
 @tailwind utilities;
 
 @layer base {
+  * {
+    @apply transition-all duration-200;
+  }
+}
+
+@layer components {
+  .card-hover {
+    @apply hover:shadow-xl hover:-translate-y-1 cursor-pointer;
+  }
+  
+  .search-loading {
+    @apply relative overflow-hidden before:absolute before:inset-0 before:animate-pulse before:bg-gray-200 dark:before:bg-gray-700;
+  }
+}
+
+@layer base {
   :root {
     --background: 0 0% 98%;
     --foreground: 0 0% 20%;
