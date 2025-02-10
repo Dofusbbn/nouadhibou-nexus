@@ -46,8 +46,19 @@ const PropertyFilters = ({
   };
 
   return (
-    <div className="lg:w-1/4">
-      <div className="glass-card p-6 rounded-xl">
+    <div className="lg:w-1/4 w-full">
+      <Sheet>
+        <SheetTrigger asChild className="lg:hidden block mb-4">
+          <Button variant="outline" className="w-full">
+            <Filter className="mr-2 h-4 w-4" />
+            Filters
+          </Button>
+        </SheetTrigger>
+        <SheetContent side="left" className="w-full sm:w-[340px]">
+          <SheetHeader className="mb-4">
+            <SheetTitle>Filters</SheetTitle>
+          </SheetHeader>
+          <div className="glass-card p-6 rounded-xl lg:block">
         <h2 className="text-xl font-semibold mb-4">Filters</h2>
         
         <div className="space-y-4">
@@ -130,6 +141,10 @@ const PropertyFilters = ({
             </select>
           </div>
         </div>
+        </SheetContent>
+      </Sheet>
+      <div className="glass-card p-6 rounded-xl hidden lg:block">
+        {/* Original desktop filters content */}
       </div>
     </div>
   );

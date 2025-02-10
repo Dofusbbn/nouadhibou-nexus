@@ -1,4 +1,66 @@
 import * as React from "react"
+import useEmblaCarousel from "embla-carousel-react"
+import { ArrowLeft, ArrowRight } from "lucide-react"
+import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
+
+type CarouselApi = any
+
+type CarouselProps = {
+  images: string[]
+  className?: string
+}
+
+export function Carousel({ images, className }: CarouselProps) {
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true })
+
+  const canScrollPrev = true
+  const canScrollNext = true
+
+  const onPrevClick = React.useCallback(() => {
+    if (emblaApi) emblaApi.scrollPrev()
+  }, [emblaApi])
+
+  const onNextClick = React.useCallback(() => {
+    if (emblaApi) emblaApi.scrollNext()
+  }, [emblaApi])
+
+  return (
+    <div className={cn("relative", className)}>
+      <div ref={emblaRef} className="overflow-hidden rounded-lg">
+        <div className="flex touch-pan-y">
+          {images.map((image, index) => (
+            <div className="relative min-w-full flex-[0_0_100%]" key={index}>
+              <img
+                src={image || "/placeholder.svg"}
+                alt={`Image ${index + 1}`}
+                className="aspect-[16/9] w-full object-cover"
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+      <Button
+        variant="outline"
+        size="icon"
+        className="absolute left-2 top-1/2 h-8 w-8 -translate-y-1/2 rounded-full bg-white/50"
+        onClick={onPrevClick}
+        disabled={!canScrollPrev}
+      >
+        <ArrowLeft className="h-4 w-4" />
+      </Button>
+      <Button
+        variant="outline"
+        size="icon"
+        className="absolute right-2 top-1/2 h-8 w-8 -translate-y-1/2 rounded-full bg-white/50"
+        onClick={onNextClick}
+        disabled={!canScrollNext}
+      >
+        <ArrowRight className="h-4 w-4" />
+      </Button>
+    </div>
+  )
+}
 import useEmblaCarousel, {
   type UseEmblaCarouselType,
 } from "embla-carousel-react"
