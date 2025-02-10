@@ -1,6 +1,14 @@
 
-import { Search } from 'lucide-react';
+import { Search, Filter } from 'lucide-react';
 import { type PropertyType } from '@/types';
+import { Button } from "@/components/ui/button";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 interface PropertyFiltersProps {
   searchTerm: string;
