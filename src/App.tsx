@@ -20,6 +20,8 @@ import Admin from "./pages/Admin";
 
 const queryClient = new QueryClient();
 
+import ErrorBoundary from "./components/ErrorBoundary";
+
 const App = () => (
   <ErrorBoundary>
     <QueryClientProvider client={queryClient}>
