@@ -9,10 +9,15 @@ import { usePagination } from '@/hooks/usePagination';
 import { useFavorites } from '@/hooks/useFavorites';
 import Pagination from '@/components/Pagination';
 import FavoriteButton from '@/components/FavoriteButton';
+import ShareButton from '@/components/ShareButton';
+import PropertySkeleton from '@/components/PropertySkeleton';
+import { useToast } from "@/hooks/use-toast";
+
+type PropertyType = 'apartment' | 'villa' | 'office' | 'land';
 
 const Properties = () => {
   const [filters, setFilters] = useState({
-    type: '',
+    type: '' as PropertyType | '',
     minPrice: '',
     maxPrice: '',
     bedrooms: '',
@@ -21,6 +26,7 @@ const Properties = () => {
   const { searchTerm, setSearchTerm } = useSearch('properties');
   const { currentPage, setCurrentPage, itemsPerPage, from, to } = usePagination(8);
   const { isFavorite, toggleFavorite } = useFavorites('properties');
+  const { toast } = useToast();
 
   const { data: properties, isLoading } = useQuery({
     queryKey: ['properties', filters, sortBy, searchTerm, currentPage],
@@ -65,11 +71,47 @@ const Properties = () => {
       query = query.range(from, to - 1);
 
       const { data, error, count } = await query;
-      if (error) throw error;
+      if (error) {
+        toast({
+          title: "Error loading properties",
+          description: error.message,
+          variant: "destructive",
+        });
+        throw error;
+      }
       
       return { data, count };
     },
   });
+
+  const validatePriceRange = (min: string, max: string) => {
+    const minPrice = parseFloat(min);
+    const maxPrice = parseFloat(max);
+    
+    if (minPrice && maxPrice && minPrice > maxPrice) {
+      toast({
+        title: "Invalid price range",
+        description: "Minimum price cannot be greater than maximum price",
+        variant: "destructive",
+      });
+      return false;
+    }
+    return true;
+  };
+
+  const handlePriceChange = (type: 'min' | 'max', value: string) => {
+    const newFilters = {
+      ...filters,
+      [type === 'min' ? 'minPrice' : 'maxPrice']: value,
+    };
+    
+    if (validatePriceRange(
+      type === 'min' ? value : filters.minPrice,
+      type === 'max' ? value : filters.maxPrice
+    )) {
+      setFilters(newFilters);
+    }
+  };
 
   return (
     <div className="min-h-screen py-8">
@@ -118,7 +160,7 @@ const Properties = () => {
                   <select
                     className="w-full p-2 rounded-lg border bg-white/50"
                     value={filters.type}
-                    onChange={(e) => setFilters(prev => ({ ...prev, type: e.target.value }))}
+                    onChange={(e) => setFilters(prev => ({ ...prev, type: e.target.value as PropertyType | '' }))}
                   >
                     <option value="">All Types</option>
                     <option value="apartment">Apartment</option>
@@ -135,15 +177,17 @@ const Properties = () => {
                       type="number" 
                       placeholder="Min"
                       value={filters.minPrice}
-                      onChange={(e) => setFilters(prev => ({ ...prev, minPrice: e.target.value }))}
+                      onChange={(e) => handlePriceChange('min', e.target.value)}
                       className="w-1/2 p-2 rounded-lg border bg-white/50"
+                      min="0"
                     />
                     <input 
                       type="number" 
                       placeholder="Max"
                       value={filters.maxPrice}
-                      onChange={(e) => setFilters(prev => ({ ...prev, maxPrice: e.target.value }))}
+                      onChange={(e) => handlePriceChange('max', e.target.value)}
                       className="w-1/2 p-2 rounded-lg border bg-white/50"
+                      min="0"
                     />
                   </div>
                 </div>
@@ -169,8 +213,10 @@ const Properties = () => {
           {/* Listings Grid */}
           <div className="lg:w-3/4">
             {isLoading ? (
-              <div className="flex justify-center">
-                <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+              <div className="grid md:grid-cols-2 gap-6">
+                {Array.from({ length: 4 }).map((_, index) => (
+                  <PropertySkeleton key={index} />
+                ))}
               </div>
             ) : (
               <>
@@ -190,11 +236,16 @@ const Properties = () => {
                         <span className="absolute top-2 right-2 bg-primary text-white px-3 py-1 rounded-full text-sm">
                           {property.status}
                         </span>
-                        <FavoriteButton
-                          isFavorite={isFavorite(property.id)}
-                          onClick={() => toggleFavorite.mutate(property.id)}
-                          className="absolute top-2 left-2"
-                        />
+                        <div className="absolute top-2 left-2 flex gap-2">
+                          <FavoriteButton
+                            isFavorite={isFavorite(property.id)}
+                            onClick={() => toggleFavorite.mutate(property.id)}
+                          />
+                          <ShareButton
+                            title={property.title}
+                            url={window.location.origin + `/properties/${property.id}`}
+                          />
+                        </div>
                       </div>
                       
                       <div className="p-4">

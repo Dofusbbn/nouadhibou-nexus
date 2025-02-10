@@ -9,10 +9,15 @@ import { usePagination } from '@/hooks/usePagination';
 import { useFavorites } from '@/hooks/useFavorites';
 import Pagination from '@/components/Pagination';
 import FavoriteButton from '@/components/FavoriteButton';
+import ShareButton from '@/components/ShareButton';
+import VehicleSkeleton from '@/components/VehicleSkeleton';
+import { useToast } from "@/hooks/use-toast";
+
+type VehicleType = 'car' | 'bike' | 'truck';
 
 const Vehicles = () => {
   const [filters, setFilters] = useState({
-    type: '',
+    type: '' as VehicleType | '',
     minPrice: '',
     maxPrice: '',
     condition: '',
@@ -22,6 +27,7 @@ const Vehicles = () => {
   const { searchTerm, setSearchTerm } = useSearch('vehicles');
   const { currentPage, setCurrentPage, itemsPerPage, from, to } = usePagination(8);
   const { isFavorite, toggleFavorite } = useFavorites('vehicles');
+  const { toast } = useToast();
 
   const { data: vehicles, isLoading } = useQuery({
     queryKey: ['vehicles', filters, sortBy, searchTerm, currentPage],
@@ -69,11 +75,47 @@ const Vehicles = () => {
       query = query.range(from, to - 1);
 
       const { data, error, count } = await query;
-      if (error) throw error;
+      if (error) {
+        toast({
+          title: "Error loading vehicles",
+          description: error.message,
+          variant: "destructive",
+        });
+        throw error;
+      }
       
       return { data, count };
     },
   });
+
+  const validatePriceRange = (min: string, max: string) => {
+    const minPrice = parseFloat(min);
+    const maxPrice = parseFloat(max);
+    
+    if (minPrice && maxPrice && minPrice > maxPrice) {
+      toast({
+        title: "Invalid price range",
+        description: "Minimum price cannot be greater than maximum price",
+        variant: "destructive",
+      });
+      return false;
+    }
+    return true;
+  };
+
+  const handlePriceChange = (type: 'min' | 'max', value: string) => {
+    const newFilters = {
+      ...filters,
+      [type === 'min' ? 'minPrice' : 'maxPrice']: value,
+    };
+    
+    if (validatePriceRange(
+      type === 'min' ? value : filters.minPrice,
+      type === 'max' ? value : filters.maxPrice
+    )) {
+      setFilters(newFilters);
+    }
+  };
 
   return (
     <div className="min-h-screen py-8">
@@ -122,7 +164,7 @@ const Vehicles = () => {
                   <select
                     className="w-full p-2 rounded-lg border bg-white/50"
                     value={filters.type}
-                    onChange={(e) => setFilters(prev => ({ ...prev, type: e.target.value }))}
+                    onChange={(e) => setFilters(prev => ({ ...prev, type: e.target.value as VehicleType | '' }))}
                   >
                     <option value="">All Types</option>
                     <option value="car">Car</option>
@@ -138,15 +180,17 @@ const Vehicles = () => {
                       type="number" 
                       placeholder="Min"
                       value={filters.minPrice}
-                      onChange={(e) => setFilters(prev => ({ ...prev, minPrice: e.target.value }))}
+                      onChange={(e) => handlePriceChange('min', e.target.value)}
                       className="w-1/2 p-2 rounded-lg border bg-white/50"
+                      min="0"
                     />
                     <input 
                       type="number" 
                       placeholder="Max"
                       value={filters.maxPrice}
-                      onChange={(e) => setFilters(prev => ({ ...prev, maxPrice: e.target.value }))}
+                      onChange={(e) => handlePriceChange('max', e.target.value)}
                       className="w-1/2 p-2 rounded-lg border bg-white/50"
+                      min="0"
                     />
                   </div>
                 </div>
@@ -186,8 +230,10 @@ const Vehicles = () => {
           {/* Listings Grid */}
           <div className="lg:w-3/4">
             {isLoading ? (
-              <div className="flex justify-center">
-                <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+              <div className="grid md:grid-cols-2 gap-6">
+                {Array.from({ length: 4 }).map((_, index) => (
+                  <VehicleSkeleton key={index} />
+                ))}
               </div>
             ) : (
               <>
@@ -207,11 +253,16 @@ const Vehicles = () => {
                         <span className="absolute top-2 right-2 bg-primary text-white px-3 py-1 rounded-full text-sm">
                           {vehicle.condition}
                         </span>
-                        <FavoriteButton
-                          isFavorite={isFavorite(vehicle.id)}
-                          onClick={() => toggleFavorite.mutate(vehicle.id)}
-                          className="absolute top-2 left-2"
-                        />
+                        <div className="absolute top-2 left-2 flex gap-2">
+                          <FavoriteButton
+                            isFavorite={isFavorite(vehicle.id)}
+                            onClick={() => toggleFavorite.mutate(vehicle.id)}
+                          />
+                          <ShareButton
+                            title={vehicle.title}
+                            url={window.location.origin + `/vehicles/${vehicle.id}`}
+                          />
+                        </div>
                       </div>
                       
                       <div className="p-4">
