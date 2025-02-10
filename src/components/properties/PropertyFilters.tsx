@@ -5,6 +5,7 @@ interface PropertyFiltersProps {
   searchTerm: string;
   setSearchTerm: (term: string) => void;
   filters: {
+    listingType: 'buy' | 'rent';
     type: PropertyType | '';
     minPrice: string;
     maxPrice: string;
@@ -62,6 +63,28 @@ const PropertyFilters = ({
         <h2 className="text-xl font-semibold mb-4">Filters</h2>
 
         <div className="space-y-4">
+          <div className="flex justify-center gap-2 p-1 bg-gray-100 dark:bg-gray-800 rounded-lg">
+            <button
+              className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+                filters.listingType === 'buy'
+                  ? 'bg-white dark:bg-gray-700 shadow-sm'
+                  : 'text-gray-600 dark:text-gray-300'
+              }`}
+              onClick={() => setFilters(prev => ({ ...prev, listingType: 'buy' }))}
+            >
+              Buy
+            </button>
+            <button
+              className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+                filters.listingType === 'rent'
+                  ? 'bg-white dark:bg-gray-700 shadow-sm'
+                  : 'text-gray-600 dark:text-gray-300'
+              }`}
+              onClick={() => setFilters(prev => ({ ...prev, listingType: 'rent' }))}
+            >
+              Rent
+            </button>
+          </div>
           <div>
             <label className="block text-sm font-medium mb-2">Search</label>
             <div className="relative">
