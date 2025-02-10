@@ -1,130 +1,95 @@
-
 import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Navigate } from 'react-router-dom';
 
 export default function Auth() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [isResetMode, setIsResetMode] = useState(false);
-  const { signIn, signUp, signInWithGoogle, resetPassword, session } = useAuth();
-
-  const handleSubmit = async (action: 'signin' | 'signup' | 'reset') => {
-    switch (action) {
-      case 'signin':
-        await signIn(email, password);
-        break;
-      case 'signup':
-        await signUp(email, password);
-        break;
-      case 'reset':
-        await resetPassword(email);
-        setIsResetMode(false);
-        break;
-    }
-  };
+  const [isSignIn, setIsSignIn] = useState(true);
+  const { signInWithGoogle, session } = useAuth();
 
   if (session) {
     return <Navigate to="/" replace />;
   }
 
-  if (isResetMode) {
-    return (
-      <Card className="w-[350px] mx-auto mt-8">
-        <CardHeader>
-          <CardTitle>Reset Password</CardTitle>
-          <CardDescription>Enter your email to reset your password</CardDescription>
-        </CardHeader>
-        <CardContent>
+  return (
+    <div className="flex min-h-screen">
+      {/* Left Panel */}
+      <div className="hidden md:flex md:w-1/2 bg-gradient-to-br from-emerald-400 to-emerald-600 p-12 flex-col justify-center text-white">
+        <div className="max-w-md">
+          <h1 className="text-4xl font-bold mb-4">
+            {isSignIn ? 'Welcome Back!' : 'Welcome!'}
+          </h1>
+          <p className="text-lg opacity-90">
+            {isSignIn 
+              ? 'To keep connected with us please login with your personal info'
+              : 'Join us to start exploring properties and vehicles'}
+          </p>
+          <Button 
+            variant="outline" 
+            className="mt-8 text-white border-white hover:bg-white/10"
+            onClick={() => setIsSignIn(!isSignIn)}
+          >
+            {isSignIn ? 'SIGN UP' : 'SIGN IN'}
+          </Button>
+        </div>
+      </div>
+
+      {/* Right Panel */}
+      <div className="w-full md:w-1/2 p-12 flex flex-col justify-center items-center">
+        <div className="w-full max-w-md space-y-8">
+          <div className="text-center">
+            <h2 className="text-3xl font-bold text-emerald-600 mb-2">
+              {isSignIn ? 'Sign In' : 'Create Account'}
+            </h2>
+            {!isSignIn && (
+              <p className="text-gray-500 text-sm mb-8">
+                or use your email for registration
+              </p>
+            )}
+          </div>
+
           <div className="space-y-4">
+            {!isSignIn && (
+              <Input
+                type="text"
+                placeholder="Name"
+                className="w-full px-4 py-2"
+              />
+            )}
             <Input
               type="email"
               placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              className="w-full px-4 py-2"
             />
-            <Button className="w-full" onClick={() => handleSubmit('reset')}>
-              Send Reset Instructions
+            <Input
+              type="password"
+              placeholder="Password"
+              className="w-full px-4 py-2"
+            />
+          </div>
+
+          <div className="space-y-4">
+            <Button 
+              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
+              onClick={signInWithGoogle}
+            >
+              Continue with Google
             </Button>
-            <Button variant="link" className="w-full" onClick={() => setIsResetMode(false)}>
-              Back to Sign In
+
+            {/* Mobile Toggle */}
+            <Button
+              variant="ghost"
+              className="w-full md:hidden"
+              onClick={() => setIsSignIn(!isSignIn)}
+            >
+              {isSignIn 
+                ? "Don't have an account? Sign Up" 
+                : "Already have an account? Sign In"}
             </Button>
           </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  return (
-    <Card className="w-[350px] mx-auto mt-8">
-      <Tabs defaultValue="signin">
-        <CardHeader>
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="signin">Sign In</TabsTrigger>
-            <TabsTrigger value="signup">Sign Up</TabsTrigger>
-          </TabsList>
-        </CardHeader>
-        <CardContent>
-          <TabsContent value="signin">
-            <CardDescription className="mb-4">
-              Sign in to your account
-            </CardDescription>
-            <div className="space-y-4">
-              <Input
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-              <Input
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-              <Button className="w-full" onClick={() => handleSubmit('signin')}>
-                Sign In
-              </Button>
-              <Button variant="outline" className="w-full" onClick={signInWithGoogle}>
-                Sign in with Google
-              </Button>
-              <Button variant="link" className="w-full" onClick={() => setIsResetMode(true)}>
-                Forgot Password?
-              </Button>
-            </div>
-          </TabsContent>
-          
-          <TabsContent value="signup">
-            <CardDescription className="mb-4">
-              Create a new account
-            </CardDescription>
-            <div className="space-y-4">
-              <Input
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-              <Input
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-              <Button className="w-full" onClick={() => handleSubmit('signup')}>
-                Sign Up
-              </Button>
-              <Button variant="outline" className="w-full" onClick={signInWithGoogle}>
-                Sign up with Google
-              </Button>
-            </div>
-          </TabsContent>
-        </CardContent>
-      </Tabs>
-    </Card>
+        </div>
+      </div>
+    </div>
   );
 }
