@@ -20,10 +20,12 @@ import Admin from "./pages/Admin";
 const queryClient = new QueryClient();
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <BrowserRouter>
-      <AuthProvider>
-        <TooltipProvider>
+  <ErrorBoundary>
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <AuthProvider>
+          <TooltipProvider>
+            <OfflineDetector />
           <Toaster />
           <Sonner />
           <div className="flex flex-col min-h-screen">
@@ -47,6 +49,7 @@ const App = () => (
       </AuthProvider>
     </BrowserRouter>
   </QueryClientProvider>
+  </ErrorBoundary>
 );
 
 export default App;
