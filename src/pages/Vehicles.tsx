@@ -13,6 +13,7 @@ import type { VehicleType } from '@/types';
 
 const Vehicles = () => {
   const [filters, setFilters] = useState({
+    listingType: 'buy' as 'buy' | 'rent',
     type: '' as VehicleType | '',
     minPrice: '',
     maxPrice: '',
@@ -44,6 +45,7 @@ const Vehicles = () => {
       }
 
       // Apply filters
+      query = query.eq('listing_type', filters.listingType);
       if (filters.type) {
         query = query.eq('vehicle_type', filters.type);
       }
