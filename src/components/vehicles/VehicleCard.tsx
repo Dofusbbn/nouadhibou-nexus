@@ -1,3 +1,4 @@
+
 import { Calendar, MapPin } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import FavoriteButton from '@/components/FavoriteButton';
@@ -19,16 +20,10 @@ const VehicleCard = ({ vehicle, isFavorite, onToggleFavorite }: VehicleCardProps
       className="glass-card rounded-xl overflow-hidden hover-effect transition-transform hover:-translate-y-1 relative"
     >
       <div className="relative h-48">
-        <img
-          src={vehicle.images?.[0] || '/placeholder.svg'}
-          alt={`${vehicle.make} ${vehicle.model} ${vehicle.year} - Vehicle for sale in Nouadhibou`}
-          className="w-full h-48 object-cover"
-          loading="lazy"
-          decoding="async"
-          onError={(e) => {
-            e.currentTarget.src = '/placeholder.svg';
-            e.currentTarget.alt = 'Vehicle image placeholder';
-          }}
+        <img 
+          src={vehicle.images?.[0] || "/placeholder.svg"}
+          alt={vehicle.title}
+          className="w-full h-full object-cover"
         />
         <span className="absolute top-2 right-2 bg-primary text-white px-3 py-1 rounded-full text-sm">
           {vehicle.condition}
@@ -44,10 +39,10 @@ const VehicleCard = ({ vehicle, isFavorite, onToggleFavorite }: VehicleCardProps
           />
         </div>
       </div>
-
+      
       <div className="p-4">
         <h3 className="text-xl font-semibold mb-2">{vehicle.title}</h3>
-
+        
         <div className="flex items-center gap-4 text-sm text-gray-600 mb-4">
           <div className="flex items-center gap-1">
             <Calendar className="h-4 w-4" />
@@ -60,7 +55,7 @@ const VehicleCard = ({ vehicle, isFavorite, onToggleFavorite }: VehicleCardProps
             </div>
           )}
         </div>
-
+        
         <div className="flex items-center justify-between">
           <span className="text-2xl font-bold text-primary">
             ${vehicle.price.toLocaleString()}

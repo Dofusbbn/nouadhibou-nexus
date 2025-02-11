@@ -1,3 +1,4 @@
+
 import { BedDouble, Bath, MapPin } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import FavoriteButton from '@/components/FavoriteButton';
@@ -19,16 +20,10 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite }: PropertyCardPr
       className="glass-card rounded-xl overflow-hidden hover-effect transition-transform hover:-translate-y-1 relative"
     >
       <div className="relative h-48">
-        <img
-          src={property.images?.[0] || '/placeholder.svg'}
-          alt={`${property.title} - ${property.location} property in Nouadhibou`}
-          className="w-full h-48 object-cover"
-          loading="lazy"
-          decoding="async"
-          onError={(e) => {
-            e.currentTarget.src = '/placeholder.svg';
-            e.currentTarget.alt = 'Property image placeholder';
-          }}
+        <img 
+          src={property.images?.[0] || "/placeholder.svg"}
+          alt={property.title}
+          className="w-full h-full object-cover"
         />
         <span className="absolute top-2 right-2 bg-primary text-white px-3 py-1 rounded-full text-sm">
           {property.status}
@@ -44,11 +39,11 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite }: PropertyCardPr
           />
         </div>
       </div>
-
+      
       <div className="p-4">
         <h3 className="text-xl font-semibold mb-2">{property.title}</h3>
         <p className="text-gray-600 mb-4">{property.location}</p>
-
+        
         <div className="flex items-center gap-4 text-sm text-gray-600 mb-4">
           {property.bedrooms && (
             <div className="flex items-center gap-1">
@@ -69,7 +64,7 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite }: PropertyCardPr
             </div>
           )}
         </div>
-
+        
         <div className="flex items-center justify-between">
           <span className="text-2xl font-bold text-primary">
             ${property.price.toLocaleString()}

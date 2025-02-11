@@ -1,4 +1,5 @@
-import { Home, Car, LogIn, LogOut, User, Shield, Menu, X, Sun, Moon } from 'lucide-react';
+
+import { Home, Car, LogIn, LogOut, User, Shield, Menu, X } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRole } from '@/hooks/useRole';
@@ -50,7 +51,7 @@ const Navbar = () => {
           <Link to="/" className="text-xl font-bold text-primary">
             Nouadhibou
           </Link>
-
+          
           {/* Mobile menu button */}
           <button
             onClick={toggleMenu}
@@ -62,7 +63,7 @@ const Navbar = () => {
               <Menu className="h-6 w-6" />
             )}
           </button>
-
+          
           {/* Desktop navigation */}
           <div className="hidden md:flex items-center space-x-4">
             {navItems.map((item) => (
@@ -79,28 +80,21 @@ const Navbar = () => {
                 <span>{item.label}</span>
               </Link>
             ))}
-
+            
             {user ? (
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-4">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => document.documentElement.classList.toggle('dark')}
-                    className="rounded-full w-8 h-8"
-                  >
-                    <Sun className="h-4 w-4 rotate-0 scale-100 transition-transform dark:-rotate-90 dark:scale-0" />
-                    <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-transform dark:rotate-0 dark:scale-100" />
-                    <span className="sr-only">Toggle theme</span>
-                  </Button>
-                  <Button variant="ghost" size="sm" onClick={() => signOut()} className="flex items-center gap-2">
-                    <LogOut className="h-4 w-4" />
-                    <span className="hidden lg:inline">Sign Out</span>
-                  </Button>
-                </div>
+              <div className="flex items-center gap-2">
                 <Button variant="ghost" size="sm" className="flex items-center gap-2">
                   <User className="h-4 w-4" />
                   <span className="hidden lg:inline">{user.email}</span>
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => signOut()}
+                  className="flex items-center gap-2"
+                >
+                  <LogOut className="h-4 w-4" />
+                  <span className="hidden lg:inline">Sign Out</span>
                 </Button>
               </div>
             ) : (
@@ -132,7 +126,7 @@ const Navbar = () => {
                 <span>{item.label}</span>
               </Link>
             ))}
-
+            
             {user ? (
               <div className="space-y-2 pt-2 border-t border-gray-200">
                 <Button
@@ -180,3 +174,4 @@ const Navbar = () => {
 };
 
 export default Navbar;
+

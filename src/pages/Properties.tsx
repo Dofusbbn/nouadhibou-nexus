@@ -13,7 +13,6 @@ import type { PropertyType } from '@/types';
 
 const Properties = () => {
   const [filters, setFilters] = useState({
-    listingType: 'buy' as 'buy' | 'rent',
     type: '' as PropertyType | '',
     minPrice: '',
     maxPrice: '',

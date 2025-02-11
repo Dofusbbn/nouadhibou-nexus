@@ -1,3 +1,4 @@
+
 import { Search } from 'lucide-react';
 import type { VehicleType } from '@/types';
 
@@ -5,18 +6,11 @@ interface VehicleFiltersProps {
   searchTerm: string;
   setSearchTerm: (term: string) => void;
   filters: {
-    listingType: 'buy' | 'rent';
     type: VehicleType | '';
     minPrice: string;
     maxPrice: string;
     condition: string;
     year: string;
-    brand: string;
-    transmission: string;
-    fuelType: string;
-    minMileage: string;
-    maxMileage: string;
-    color: string;
   };
   setFilters: React.Dispatch<React.SetStateAction<{
     type: VehicleType | '';
@@ -24,17 +18,10 @@ interface VehicleFiltersProps {
     maxPrice: string;
     condition: string;
     year: string;
-    brand: string;
-    transmission: string;
-    fuelType: string;
-    minMileage: string;
-    maxMileage: string;
-    color: string;
   }>>;
   sortBy: 'price_asc' | 'price_desc' | 'newest';
   setSortBy: React.Dispatch<React.SetStateAction<'price_asc' | 'price_desc' | 'newest'>>;
   validatePriceRange: (min: string, max: string) => boolean;
-  validateMileageRange: (min: string, max: string) => boolean; // Added function for mileage validation
 }
 
 const VehicleFilters = ({
@@ -44,32 +31,17 @@ const VehicleFilters = ({
   setFilters,
   sortBy,
   setSortBy,
-  validatePriceRange,
-  validateMileageRange // Added prop for mileage validation
+  validatePriceRange
 }: VehicleFiltersProps) => {
   const handlePriceChange = (type: 'min' | 'max', value: string) => {
     const newFilters = {
       ...filters,
       [type === 'min' ? 'minPrice' : 'maxPrice']: value,
     };
-
+    
     if (validatePriceRange(
       type === 'min' ? value : filters.minPrice,
       type === 'max' ? value : filters.maxPrice
-    )) {
-      setFilters(newFilters);
-    }
-  };
-
-  const handleMileageChange = (type: 'min' | 'max', value: string) => {
-    const newFilters = {
-      ...filters,
-      [type === 'min' ? 'minMileage' : 'maxMileage']: value,
-    };
-
-    if (validateMileageRange(
-      type === 'min' ? value : filters.minMileage,
-      type === 'max' ? value : filters.maxMileage
     )) {
       setFilters(newFilters);
     }
@@ -79,30 +51,8 @@ const VehicleFilters = ({
     <div className="lg:w-1/4">
       <div className="glass-card p-6 rounded-xl">
         <h2 className="text-xl font-semibold mb-4">Filters</h2>
-
+        
         <div className="space-y-4">
-          <div className="flex justify-center gap-2 p-1 bg-gray-100 dark:bg-gray-800 rounded-lg">
-            <button
-              className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
-                filters.listingType === 'buy'
-                  ? 'bg-white dark:bg-gray-700 shadow-sm'
-                  : 'text-gray-600 dark:text-gray-300'
-              }`}
-              onClick={() => setFilters(prev => ({ ...prev, listingType: 'buy' }))}
-            >
-              Buy
-            </button>
-            <button
-              className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
-                filters.listingType === 'rent'
-                  ? 'bg-white dark:bg-gray-700 shadow-sm'
-                  : 'text-gray-600 dark:text-gray-300'
-              }`}
-              onClick={() => setFilters(prev => ({ ...prev, listingType: 'rent' }))}
-            >
-              Rent
-            </button>
-          </div>
           <div>
             <label className="block text-sm font-medium mb-2">Search</label>
             <div className="relative">
@@ -143,7 +93,7 @@ const VehicleFilters = ({
               <option value="truck">Truck</option>
             </select>
           </div>
-
+          
           <div>
             <label className="block text-sm font-medium mb-2">Price Range</label>
             <div className="flex gap-2">
@@ -165,7 +115,7 @@ const VehicleFilters = ({
               />
             </div>
           </div>
-
+          
           <div>
             <label className="block text-sm font-medium mb-2">Condition</label>
             <select
@@ -178,7 +128,7 @@ const VehicleFilters = ({
               <option value="used">Used</option>
             </select>
           </div>
-
+          
           <div>
             <label className="block text-sm font-medium mb-2">Year</label>
             <select
@@ -193,77 +143,6 @@ const VehicleFilters = ({
               <option value="2021">2021</option>
               <option value="2020">2020</option>
             </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-2">Brand</label>
-            <input
-              type="text"
-              value={filters.brand}
-              onChange={(e) => setFilters(prev => ({ ...prev, brand: e.target.value }))}
-              className="w-full p-2 rounded-lg border bg-white/50"
-              placeholder="Enter brand"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-2">Transmission</label>
-            <select
-              className="w-full p-2 rounded-lg border bg-white/50"
-              value={filters.transmission}
-              onChange={(e) => setFilters(prev => ({ ...prev, transmission: e.target.value }))}
-            >
-              <option value="">Any</option>
-              <option value="automatic">Automatic</option>
-              <option value="manual">Manual</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-2">Fuel Type</label>
-            <select
-              className="w-full p-2 rounded-lg border bg-white/50"
-              value={filters.fuelType}
-              onChange={(e) => setFilters(prev => ({ ...prev, fuelType: e.target.value }))}
-            >
-              <option value="">Any</option>
-              <option value="gasoline">Gasoline</option>
-              <option value="diesel">Diesel</option>
-              <option value="electric">Electric</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-2">Mileage Range</label>
-            <div className="flex gap-2">
-              <input
-                type="number"
-                placeholder="Min"
-                value={filters.minMileage}
-                onChange={(e) => handleMileageChange('min', e.target.value)}
-                className="w-1/2 p-2 rounded-lg border bg-white/50"
-                min="0"
-              />
-              <input
-                type="number"
-                placeholder="Max"
-                value={filters.maxMileage}
-                onChange={(e) => handleMileageChange('max', e.target.value)}
-                className="w-1/2 p-2 rounded-lg border bg-white/50"
-                min="0"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-2">Color</label>
-            <input
-              type="text"
-              value={filters.color}
-              onChange={(e) => setFilters(prev => ({ ...prev, color: e.target.value }))}
-              className="w-full p-2 rounded-lg border bg-white/50"
-              placeholder="Enter color"
-            />
           </div>
         </div>
       </div>

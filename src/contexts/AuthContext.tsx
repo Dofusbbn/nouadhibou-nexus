@@ -1,3 +1,4 @@
+
 import { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useToast } from '@/components/ui/use-toast';
@@ -15,14 +16,9 @@ interface AuthContextType {
   session: Session | null;
   user: User | null;
   profile: Profile | null;
-  isLoading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
-  resetPassword: (email: string) => Promise<void>;
-  updatePassword: (newPassword: string) => Promise<void>;
-  updateProfile: (updates: Partial<Profile>) => Promise<void>;
-  signInWithGoogle: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -31,37 +27,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
   const navigate = useNavigate();
 
   useEffect(() => {
-    const getSessionAndProfile = async () => {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        setSession(session);
-        setUser(session?.user ?? null);
-        if (session?.user) {
-          await fetchProfile(session.user.id);
-        }
-        setIsLoading(false);
-      } catch (error) {
-        console.error("Error getting initial session:", error);
-        setIsLoading(false);
-      }
-    };
-    getSessionAndProfile();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      setIsLoading(true);
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
-        await fetchProfile(session.user.id);
+        fetchProfile(session.user.id);
+      }
+    });
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      if (session?.user) {
+        fetchProfile(session.user.id);
       } else {
         setProfile(null);
       }
-      setIsLoading(false);
     });
 
     return () => subscription.unsubscribe();
@@ -84,7 +71,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signIn = async (email: string, password: string) => {
     try {
-      setIsLoading(true);
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
       toast({
@@ -92,9 +78,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         description: "Successfully signed in",
       });
       navigate('/');
-      setIsLoading(false);
     } catch (error: any) {
-      setIsLoading(false);
       toast({
         title: "Error",
         description: error.message,
@@ -105,16 +89,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signUp = async (email: string, password: string) => {
     try {
-      setIsLoading(true);
       const { error } = await supabase.auth.signUp({ email, password });
       if (error) throw error;
       toast({
         title: "Success",
         description: "Check your email to confirm your account",
       });
-      setIsLoading(false);
     } catch (error: any) {
-      setIsLoading(false);
       toast({
         title: "Error",
         description: error.message,
@@ -125,7 +106,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signOut = async () => {
     try {
-      setIsLoading(true);
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
       toast({
@@ -133,9 +113,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         description: "Successfully signed out",
       });
       navigate('/auth');
-      setIsLoading(false);
     } catch (error: any) {
-      setIsLoading(false);
       toast({
         title: "Error",
         description: error.message,
@@ -144,30 +122,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const resetPassword = async (email: string) => {
-    // Implement password reset functionality here
-    console.log("Reset password called with email:", email);
-  };
-
-  const updatePassword = async (newPassword: string) => {
-    // Implement password update functionality here
-    console.log("Update password called with new password:", newPassword);
-
-  };
-
-  const updateProfile = async (updates: Partial<Profile>) => {
-    // Implement profile update functionality here
-    console.log("Update profile called with updates:", updates);
-  };
-
-  const signInWithGoogle = async () => {
-    // Implement Google sign-in functionality here
-    console.log("Sign in with Google called");
-  };
-
-
   return (
-    <AuthContext.Provider value={{ session, user, profile, isLoading, signIn, signUp, signOut, resetPassword, updatePassword, updateProfile, signInWithGoogle }}>
+    <AuthContext.Provider value={{ session, user, profile, signIn, signUp, signOut }}>
       {children}
     </AuthContext.Provider>
   );
