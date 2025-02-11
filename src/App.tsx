@@ -16,6 +16,7 @@ import VehicleDetail from "./pages/VehicleDetail";
 import NotFound from "./pages/NotFound";
 import Auth from "./components/Auth";
 import Admin from "./pages/Admin";
+import Profile from "./pages/Profile";
 
 const queryClient = new QueryClient();
 
@@ -38,6 +39,7 @@ const App = () => (
                 <Route path="/vehicles/:id" element={<VehicleDetail />} />
                 <Route path="/auth" element={<Auth />} />
                 <Route path="/admin" element={<Admin />} />
+                <Route path="/profile" element={<Profile />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </main>
