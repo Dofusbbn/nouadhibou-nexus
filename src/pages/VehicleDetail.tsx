@@ -12,6 +12,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { useIsMobile } from '@/hooks/use-mobile';
+import { Helmet } from 'react-helmet';
 
 const VehicleDetail = () => {
   const { id } = useParams();
@@ -50,8 +51,18 @@ const VehicleDetail = () => {
     );
   }
 
+  const metaDescription = `${vehicle.year} ${vehicle.make} ${vehicle.model} - ${vehicle.condition} condition${vehicle.mileage ? `, ${vehicle.mileage.toLocaleString()} km` : ''}. ${vehicle.description?.slice(0, 150)}...`;
+
   return (
     <div className="min-h-screen py-8">
+      <Helmet>
+        <title>{`${vehicle.title} | Vehicle Details`}</title>
+        <meta name="description" content={metaDescription} />
+        <meta property="og:title" content={vehicle.title} />
+        <meta property="og:description" content={metaDescription} />
+        {vehicle.images?.[0] && <meta property="og:image" content={vehicle.images[0]} />}
+      </Helmet>
+
       <div className="container mx-auto px-4">
         <Button
           variant="ghost"
@@ -72,8 +83,10 @@ const VehicleDetail = () => {
                       <div className={`relative ${isMobile ? 'h-64' : 'h-96'}`}>
                         <img
                           src={image || '/placeholder.svg'}
-                          alt={`${vehicle.title} - Image ${index + 1}`}
+                          alt={`${vehicle.year} ${vehicle.make} ${vehicle.model} - View ${index + 1}`}
                           className="w-full h-full object-cover"
+                          loading={index === 0 ? 'eager' : 'lazy'}
+                          decoding="async"
                         />
                       </div>
                     </CarouselItem>
@@ -86,8 +99,10 @@ const VehicleDetail = () => {
               <div className={`relative ${isMobile ? 'h-64' : 'h-96'}`}>
                 <img
                   src="/placeholder.svg"
-                  alt={vehicle.title}
+                  alt={`${vehicle.year} ${vehicle.make} ${vehicle.model}`}
                   className="w-full h-full object-cover"
+                  loading="eager"
+                  decoding="async"
                 />
               </div>
             )}

@@ -22,8 +22,10 @@ const VehicleCard = ({ vehicle, isFavorite, onToggleFavorite }: VehicleCardProps
       <div className="relative h-48">
         <img 
           src={vehicle.images?.[0] || "/placeholder.svg"}
-          alt={vehicle.title}
+          alt={`${vehicle.year} ${vehicle.make} ${vehicle.model}`}
           className="w-full h-full object-cover"
+          loading="lazy"
+          decoding="async"
         />
         <span className="absolute top-2 right-2 bg-primary text-white px-3 py-1 rounded-full text-sm">
           {vehicle.condition}
