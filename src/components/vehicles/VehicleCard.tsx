@@ -27,9 +27,18 @@ const VehicleCard = ({ vehicle, isFavorite, onToggleFavorite }: VehicleCardProps
           loading="lazy"
           decoding="async"
         />
-        <span className="absolute top-2 right-2 bg-primary text-white px-3 py-1 rounded-full text-sm">
-          {vehicle.condition}
-        </span>
+        <div className="absolute top-2 right-2 flex gap-2">
+          <span className="bg-primary text-white px-3 py-1 rounded-full text-sm">
+            {vehicle.condition}
+          </span>
+          <span className={`px-3 py-1 rounded-full text-sm ${
+            vehicle.listing_type === 'sale' 
+              ? 'bg-green-500 text-white' 
+              : 'bg-blue-500 text-white'
+          }`}>
+            For {vehicle.listing_type === 'sale' ? 'Sale' : 'Rent'}
+          </span>
+        </div>
         <div className="absolute top-2 left-2 flex gap-2">
           <FavoriteButton
             isFavorite={isFavorite}
@@ -61,6 +70,7 @@ const VehicleCard = ({ vehicle, isFavorite, onToggleFavorite }: VehicleCardProps
         <div className="flex items-center justify-between">
           <span className="text-2xl font-bold text-primary">
             ${vehicle.price.toLocaleString()}
+            {vehicle.listing_type === 'rent' && <span className="text-sm font-normal">/month</span>}
           </span>
         </div>
       </div>

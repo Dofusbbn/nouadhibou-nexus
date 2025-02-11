@@ -18,6 +18,11 @@ const Vehicles = () => {
     maxPrice: '',
     condition: '',
     year: '',
+    listingType: 'sale' as 'sale' | 'rent',
+    make: '',
+    model: '',
+    minMileage: '',
+    maxMileage: '',
   });
   const [sortBy, setSortBy] = useState<'price_asc' | 'price_desc' | 'newest'>('newest');
   const { searchTerm, setSearchTerm } = useSearch('vehicles');
@@ -38,6 +43,8 @@ const Vehicles = () => {
       }
 
       // Apply filters
+      query = query.eq('listing_type', filters.listingType);
+      
       if (filters.type) {
         query = query.eq('vehicle_type', filters.type);
       }
@@ -52,6 +59,18 @@ const Vehicles = () => {
       }
       if (filters.year) {
         query = query.eq('year', parseInt(filters.year));
+      }
+      if (filters.make) {
+        query = query.ilike('make', `%${filters.make}%`);
+      }
+      if (filters.model) {
+        query = query.ilike('model', `%${filters.model}%`);
+      }
+      if (filters.minMileage) {
+        query = query.gte('mileage', parseFloat(filters.minMileage));
+      }
+      if (filters.maxMileage) {
+        query = query.lte('mileage', parseFloat(filters.maxMileage));
       }
 
       // Apply sorting

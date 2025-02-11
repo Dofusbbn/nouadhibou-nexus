@@ -1,6 +1,7 @@
 
 import { Filter, Search, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
 import { useState } from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import type { VehicleType } from '@/types';
@@ -14,6 +15,11 @@ interface VehicleFiltersProps {
     maxPrice: string;
     condition: string;
     year: string;
+    listingType: 'sale' | 'rent';
+    make: string;
+    model: string;
+    minMileage: string;
+    maxMileage: string;
   };
   setFilters: React.Dispatch<React.SetStateAction<{
     type: VehicleType | '';
@@ -21,6 +27,11 @@ interface VehicleFiltersProps {
     maxPrice: string;
     condition: string;
     year: string;
+    listingType: 'sale' | 'rent';
+    make: string;
+    model: string;
+    minMileage: string;
+    maxMileage: string;
   }>>;
   sortBy: 'price_asc' | 'price_desc' | 'newest';
   setSortBy: React.Dispatch<React.SetStateAction<'price_asc' | 'price_desc' | 'newest'>>;
@@ -53,6 +64,13 @@ const VehicleFilters = ({
     }
   };
 
+  const handleMileageChange = (type: 'min' | 'max', value: string) => {
+    setFilters(prev => ({
+      ...prev,
+      [type === 'min' ? 'minMileage' : 'maxMileage']: value
+    }));
+  };
+
   const clearFilters = () => {
     setFilters({
       type: '',
@@ -60,6 +78,11 @@ const VehicleFilters = ({
       maxPrice: '',
       condition: '',
       year: '',
+      listingType: 'sale',
+      make: '',
+      model: '',
+      minMileage: '',
+      maxMileage: ''
     });
     setSearchTerm('');
     setSortBy('newest');
@@ -67,6 +90,18 @@ const VehicleFilters = ({
 
   const content = (
     <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <span className="text-sm font-medium">
+          {filters.listingType === 'sale' ? 'For Sale' : 'For Rent'}
+        </span>
+        <Switch
+          checked={filters.listingType === 'rent'}
+          onCheckedChange={(checked) => 
+            setFilters(prev => ({ ...prev, listingType: checked ? 'rent' : 'sale' }))
+          }
+        />
+      </div>
+
       <div>
         <label className="block text-sm font-medium mb-2">Search</label>
         <div className="relative">
@@ -107,6 +142,28 @@ const VehicleFilters = ({
           <option value="truck">Truck</option>
         </select>
       </div>
+
+      <div>
+        <label className="block text-sm font-medium mb-2">Make</label>
+        <input
+          type="text"
+          value={filters.make}
+          onChange={(e) => setFilters(prev => ({ ...prev, make: e.target.value }))}
+          placeholder="Enter make..."
+          className="w-full p-2 rounded-lg border bg-white/50"
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium mb-2">Model</label>
+        <input
+          type="text"
+          value={filters.model}
+          onChange={(e) => setFilters(prev => ({ ...prev, model: e.target.value }))}
+          placeholder="Enter model..."
+          className="w-full p-2 rounded-lg border bg-white/50"
+        />
+      </div>
       
       <div>
         <label className="block text-sm font-medium mb-2">Price Range</label>
@@ -124,6 +181,28 @@ const VehicleFilters = ({
             placeholder="Max"
             value={filters.maxPrice}
             onChange={(e) => handlePriceChange('max', e.target.value)}
+            className="w-1/2 p-2 rounded-lg border bg-white/50"
+            min="0"
+          />
+        </div>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium mb-2">Mileage Range (km)</label>
+        <div className="flex gap-2">
+          <input 
+            type="number" 
+            placeholder="Min"
+            value={filters.minMileage}
+            onChange={(e) => handleMileageChange('min', e.target.value)}
+            className="w-1/2 p-2 rounded-lg border bg-white/50"
+            min="0"
+          />
+          <input 
+            type="number" 
+            placeholder="Max"
+            value={filters.maxMileage}
+            onChange={(e) => handleMileageChange('max', e.target.value)}
             className="w-1/2 p-2 rounded-lg border bg-white/50"
             min="0"
           />

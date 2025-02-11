@@ -46,6 +46,7 @@ export type Database = {
           id: string
           images: string[] | null
           is_featured: boolean | null
+          listing_type: string
           location: string
           price: number
           property_type: Database["public"]["Enums"]["property_type"]
@@ -64,6 +65,7 @@ export type Database = {
           id?: string
           images?: string[] | null
           is_featured?: boolean | null
+          listing_type?: string
           location: string
           price: number
           property_type: Database["public"]["Enums"]["property_type"]
@@ -82,6 +84,7 @@ export type Database = {
           id?: string
           images?: string[] | null
           is_featured?: boolean | null
+          listing_type?: string
           location?: string
           price?: number
           property_type?: Database["public"]["Enums"]["property_type"]
@@ -161,6 +164,7 @@ export type Database = {
           id: string
           images: string[] | null
           is_featured: boolean | null
+          listing_type: string
           make: string
           mileage: number | null
           model: string
@@ -179,6 +183,7 @@ export type Database = {
           id?: string
           images?: string[] | null
           is_featured?: boolean | null
+          listing_type?: string
           make: string
           mileage?: number | null
           model: string
@@ -197,6 +202,7 @@ export type Database = {
           id?: string
           images?: string[] | null
           is_featured?: boolean | null
+          listing_type?: string
           make?: string
           mileage?: number | null
           model?: string
