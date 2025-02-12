@@ -17,6 +17,10 @@ import NotFound from "./pages/NotFound";
 import Auth from "./components/Auth";
 import Admin from "./pages/Admin";
 import Profile from "./pages/Profile";
+import EditProperty from "./pages/admin/EditProperty";
+import CreateProperty from "./pages/admin/CreateProperty";
+import EditVehicle from "./pages/admin/EditVehicle";
+import CreateVehicle from "./pages/admin/CreateVehicle";
 
 const queryClient = new QueryClient();
 
@@ -39,6 +43,10 @@ const App = () => (
                 <Route path="/vehicles/:id" element={<VehicleDetail />} />
                 <Route path="/auth" element={<Auth />} />
                 <Route path="/admin" element={<Admin />} />
+                <Route path="/admin/properties/edit/:id" element={<EditProperty />} />
+                <Route path="/admin/properties/create" element={<CreateProperty />} />
+                <Route path="/admin/vehicles/edit/:id" element={<EditVehicle />} />
+                <Route path="/admin/vehicles/create" element={<CreateVehicle />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
