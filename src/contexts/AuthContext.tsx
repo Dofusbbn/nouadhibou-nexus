@@ -60,12 +60,39 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         .from('profiles')
         .select('*')
         .eq('id', userId)
-        .single();
+        .maybeSingle();
 
-      if (error) throw error;
-      setProfile(data);
+      if (error) {
+        console.error('Error fetching profile:', error.message);
+        return;
+      }
+
+      if (data) {
+        setProfile(data);
+      } else {
+        // If no profile exists, create one
+        const { data: newProfile, error: createError } = await supabase
+          .from('profiles')
+          .insert([
+            {
+              id: userId,
+              username: user?.email?.split('@')[0],
+              full_name: null,
+              avatar_url: null
+            }
+          ])
+          .select()
+          .single();
+
+        if (createError) {
+          console.error('Error creating profile:', createError.message);
+          return;
+        }
+
+        setProfile(newProfile);
+      }
     } catch (error: any) {
-      console.error('Error fetching profile:', error.message);
+      console.error('Error in profile management:', error.message);
     }
   };
 
