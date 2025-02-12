@@ -20,13 +20,13 @@ export function useRole() {
         .from('user_roles')
         .select('role')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
 
       if (error) {
         console.error('Error checking role:', error);
         setIsAdmin(false);
       } else {
-        setIsAdmin(data.role === 'admin');
+        setIsAdmin(data?.role === 'admin');
       }
       setIsLoading(false);
     }
