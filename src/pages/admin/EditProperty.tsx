@@ -42,7 +42,7 @@ export default function EditProperty() {
       <PropertyForm
         initialData={property}
         onSubmit={updateProperty.mutateAsync}
-        isLoading={updateProperty.isLoading}
+        isLoading={updateProperty.isPending}
       />
     </div>
   );

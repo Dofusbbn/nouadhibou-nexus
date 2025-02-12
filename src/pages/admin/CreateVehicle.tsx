@@ -19,7 +19,7 @@ export default function CreateVehicle() {
       <h1 className="text-2xl font-bold mb-6">Create Vehicle</h1>
       <VehicleForm
         onSubmit={createVehicle.mutateAsync}
-        isLoading={createVehicle.isLoading}
+        isLoading={createVehicle.isPending}
       />
     </div>
   );

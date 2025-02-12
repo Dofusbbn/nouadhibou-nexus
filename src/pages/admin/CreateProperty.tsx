@@ -19,7 +19,7 @@ export default function CreateProperty() {
       <h1 className="text-2xl font-bold mb-6">Create Property</h1>
       <PropertyForm
         onSubmit={createProperty.mutateAsync}
-        isLoading={createProperty.isLoading}
+        isLoading={createProperty.isPending}
       />
     </div>
   );

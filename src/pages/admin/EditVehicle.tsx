@@ -42,7 +42,7 @@ export default function EditVehicle() {
       <VehicleForm
         initialData={vehicle}
         onSubmit={updateVehicle.mutateAsync}
-        isLoading={updateVehicle.isLoading}
+        isLoading={updateVehicle.isPending}
       />
     </div>
   );
