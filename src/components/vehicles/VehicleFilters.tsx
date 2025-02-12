@@ -1,10 +1,17 @@
 
-import { Filter, Search, X } from 'lucide-react';
+import { Filter, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Switch } from '@/components/ui/switch';
 import { useState } from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import type { VehicleType } from '@/types';
+import ListingTypeToggle from './filters/ListingTypeToggle';
+import SearchInput from './filters/SearchInput';
+import SortSelect from './filters/SortSelect';
+import VehicleTypeSelect from './filters/VehicleTypeSelect';
+import MakeModelInputs from './filters/MakeModelInputs';
+import PriceRangeFilter from './filters/PriceRangeFilter';
+import MileageRangeFilter from './filters/MileageRangeFilter';
+import ConditionYearSelects from './filters/ConditionYearSelects';
 
 interface VehicleFiltersProps {
   searchTerm: string;
@@ -64,13 +71,6 @@ const VehicleFilters = ({
     }
   };
 
-  const handleMileageChange = (type: 'min' | 'max', value: string) => {
-    setFilters(prev => ({
-      ...prev,
-      [type === 'min' ? 'minMileage' : 'maxMileage']: value
-    }));
-  };
-
   const clearFilters = () => {
     setFilters({
       type: '',
@@ -90,153 +90,53 @@ const VehicleFilters = ({
 
   const content = (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <span className="text-sm font-medium">
-          {filters.listingType === 'sale' ? 'For Sale' : 'For Rent'}
-        </span>
-        <Switch
-          checked={filters.listingType === 'rent'}
-          onCheckedChange={(checked) => 
-            setFilters(prev => ({ ...prev, listingType: checked ? 'rent' : 'sale' }))
-          }
-        />
-      </div>
+      <ListingTypeToggle
+        listingType={filters.listingType}
+        onChange={(checked) => setFilters(prev => ({ ...prev, listingType: checked ? 'rent' : 'sale' }))}
+      />
 
-      <div>
-        <label className="block text-sm font-medium mb-2">Search</label>
-        <div className="relative">
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search vehicles..."
-            className="w-full p-2 pl-8 rounded-lg border bg-white/50"
-          />
-          <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-400" />
-        </div>
-      </div>
+      <SearchInput
+        value={searchTerm}
+        onChange={setSearchTerm}
+      />
 
-      <div>
-        <label className="block text-sm font-medium mb-2">Sort By</label>
-        <select
-          className="w-full p-2 rounded-lg border bg-white/50"
-          value={sortBy}
-          onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
-        >
-          <option value="newest">Newest First</option>
-          <option value="price_asc">Price: Low to High</option>
-          <option value="price_desc">Price: High to Low</option>
-        </select>
-      </div>
+      <SortSelect
+        value={sortBy}
+        onChange={setSortBy}
+      />
 
-      <div>
-        <label className="block text-sm font-medium mb-2">Type</label>
-        <select
-          className="w-full p-2 rounded-lg border bg-white/50"
-          value={filters.type}
-          onChange={(e) => setFilters(prev => ({ ...prev, type: e.target.value as VehicleType | '' }))}
-        >
-          <option value="">All Types</option>
-          <option value="car">Car</option>
-          <option value="bike">Bike</option>
-          <option value="truck">Truck</option>
-        </select>
-      </div>
+      <VehicleTypeSelect
+        value={filters.type}
+        onChange={(value) => setFilters(prev => ({ ...prev, type: value }))}
+      />
 
-      <div>
-        <label className="block text-sm font-medium mb-2">Make</label>
-        <input
-          type="text"
-          value={filters.make}
-          onChange={(e) => setFilters(prev => ({ ...prev, make: e.target.value }))}
-          placeholder="Enter make..."
-          className="w-full p-2 rounded-lg border bg-white/50"
-        />
-      </div>
+      <MakeModelInputs
+        make={filters.make}
+        model={filters.model}
+        onMakeChange={(value) => setFilters(prev => ({ ...prev, make: value }))}
+        onModelChange={(value) => setFilters(prev => ({ ...prev, model: value }))}
+      />
 
-      <div>
-        <label className="block text-sm font-medium mb-2">Model</label>
-        <input
-          type="text"
-          value={filters.model}
-          onChange={(e) => setFilters(prev => ({ ...prev, model: e.target.value }))}
-          placeholder="Enter model..."
-          className="w-full p-2 rounded-lg border bg-white/50"
-        />
-      </div>
-      
-      <div>
-        <label className="block text-sm font-medium mb-2">Price Range</label>
-        <div className="flex gap-2">
-          <input 
-            type="number" 
-            placeholder="Min"
-            value={filters.minPrice}
-            onChange={(e) => handlePriceChange('min', e.target.value)}
-            className="w-1/2 p-2 rounded-lg border bg-white/50"
-            min="0"
-          />
-          <input 
-            type="number" 
-            placeholder="Max"
-            value={filters.maxPrice}
-            onChange={(e) => handlePriceChange('max', e.target.value)}
-            className="w-1/2 p-2 rounded-lg border bg-white/50"
-            min="0"
-          />
-        </div>
-      </div>
+      <PriceRangeFilter
+        minPrice={filters.minPrice}
+        maxPrice={filters.maxPrice}
+        onMinChange={(value) => handlePriceChange('min', value)}
+        onMaxChange={(value) => handlePriceChange('max', value)}
+      />
 
-      <div>
-        <label className="block text-sm font-medium mb-2">Mileage Range (km)</label>
-        <div className="flex gap-2">
-          <input 
-            type="number" 
-            placeholder="Min"
-            value={filters.minMileage}
-            onChange={(e) => handleMileageChange('min', e.target.value)}
-            className="w-1/2 p-2 rounded-lg border bg-white/50"
-            min="0"
-          />
-          <input 
-            type="number" 
-            placeholder="Max"
-            value={filters.maxMileage}
-            onChange={(e) => handleMileageChange('max', e.target.value)}
-            className="w-1/2 p-2 rounded-lg border bg-white/50"
-            min="0"
-          />
-        </div>
-      </div>
-      
-      <div>
-        <label className="block text-sm font-medium mb-2">Condition</label>
-        <select
-          className="w-full p-2 rounded-lg border bg-white/50"
-          value={filters.condition}
-          onChange={(e) => setFilters(prev => ({ ...prev, condition: e.target.value }))}
-        >
-          <option value="">Any</option>
-          <option value="new">New</option>
-          <option value="used">Used</option>
-        </select>
-      </div>
-      
-      <div>
-        <label className="block text-sm font-medium mb-2">Year</label>
-        <select
-          className="w-full p-2 rounded-lg border bg-white/50"
-          value={filters.year}
-          onChange={(e) => setFilters(prev => ({ ...prev, year: e.target.value }))}
-        >
-          <option value="">Any</option>
-          <option value="2024">2024</option>
-          <option value="2023">2023</option>
-          <option value="2022">2022</option>
-          <option value="2021">2021</option>
-          <option value="2020">2020</option>
-        </select>
-      </div>
+      <MileageRangeFilter
+        minMileage={filters.minMileage}
+        maxMileage={filters.maxMileage}
+        onMinChange={(value) => setFilters(prev => ({ ...prev, minMileage: value }))}
+        onMaxChange={(value) => setFilters(prev => ({ ...prev, maxMileage: value }))}
+      />
+
+      <ConditionYearSelects
+        condition={filters.condition}
+        year={filters.year}
+        onConditionChange={(value) => setFilters(prev => ({ ...prev, condition: value }))}
+        onYearChange={(value) => setFilters(prev => ({ ...prev, year: value }))}
+      />
 
       <Button 
         variant="outline" 
