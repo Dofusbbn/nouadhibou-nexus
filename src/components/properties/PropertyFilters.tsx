@@ -113,14 +113,14 @@ const PropertyFilters = ({
       <div>
         <label className="block text-sm font-medium mb-2">Type</label>
         <Select
-          value={filters.type}
-          onValueChange={(value) => setFilters(prev => ({ ...prev, type: value as PropertyType | '' }))}
+          value={filters.type || 'all'}
+          onValueChange={(value) => setFilters(prev => ({ ...prev, type: value === 'all' ? '' : value as PropertyType }))}
         >
           <SelectTrigger className="w-full bg-white/50">
             <SelectValue placeholder="Select type" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All Types</SelectItem>
+            <SelectItem value="all">All Types</SelectItem>
             <SelectItem value="apartment">Apartment</SelectItem>
             <SelectItem value="villa">Villa</SelectItem>
             <SelectItem value="office">Office</SelectItem>
