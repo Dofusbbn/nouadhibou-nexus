@@ -25,7 +25,8 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite }: PropertyCardPr
           alt={property.title}
           className="w-full h-full object-cover"
         />
-        <span className="absolute top-2 right-2 bg-primary text-white px-3 py-1 rounded-full text-sm">
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+        <span className="absolute top-2 right-2 bg-primary/90 text-white px-3 py-1 rounded-full text-sm backdrop-blur-sm">
           {property.status}
         </span>
         <div className="absolute top-2 left-2 flex gap-2">
@@ -41,8 +42,8 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite }: PropertyCardPr
       </div>
       
       <div className="p-4">
-        <h3 className="text-xl font-semibold mb-2">{property.title}</h3>
-        <p className="text-gray-600 mb-4">{property.location}</p>
+        <h3 className="text-xl font-semibold mb-2 line-clamp-1">{property.title}</h3>
+        <p className="text-gray-600 mb-4 line-clamp-1">{property.location}</p>
         
         <div className="flex items-center gap-4 text-sm text-gray-600 mb-4">
           {property.bedrooms && (
@@ -66,7 +67,7 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite }: PropertyCardPr
         </div>
         
         <div className="flex items-center justify-between">
-          <span className="text-2xl font-bold text-primary">
+          <span className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
             ${property.price.toLocaleString()}
           </span>
         </div>

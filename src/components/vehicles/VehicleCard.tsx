@@ -27,14 +27,15 @@ const VehicleCard = ({ vehicle, isFavorite, onToggleFavorite }: VehicleCardProps
           loading="lazy"
           decoding="async"
         />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
         <div className="absolute top-2 right-2 flex gap-2">
-          <span className="bg-primary text-white px-3 py-1 rounded-full text-sm">
+          <span className="bg-primary/90 text-white px-3 py-1 rounded-full text-sm backdrop-blur-sm">
             {vehicle.condition}
           </span>
-          <span className={`px-3 py-1 rounded-full text-sm ${
+          <span className={`px-3 py-1 rounded-full text-sm backdrop-blur-sm ${
             vehicle.listing_type === 'sale' 
-              ? 'bg-green-500 text-white' 
-              : 'bg-blue-500 text-white'
+              ? 'bg-green-500/90 text-white' 
+              : 'bg-blue-500/90 text-white'
           }`}>
             For {vehicle.listing_type === 'sale' ? 'Sale' : 'Rent'}
           </span>
@@ -52,7 +53,7 @@ const VehicleCard = ({ vehicle, isFavorite, onToggleFavorite }: VehicleCardProps
       </div>
       
       <div className="p-4">
-        <h3 className="text-xl font-semibold mb-2">{vehicle.title}</h3>
+        <h3 className="text-xl font-semibold mb-2 line-clamp-1">{vehicle.title}</h3>
         
         <div className="flex items-center gap-4 text-sm text-gray-600 mb-4">
           <div className="flex items-center gap-1">
@@ -68,7 +69,7 @@ const VehicleCard = ({ vehicle, isFavorite, onToggleFavorite }: VehicleCardProps
         </div>
         
         <div className="flex items-center justify-between">
-          <span className="text-2xl font-bold text-primary">
+          <span className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
             ${vehicle.price.toLocaleString()}
             {vehicle.listing_type === 'rent' && <span className="text-sm font-normal">/month</span>}
           </span>
