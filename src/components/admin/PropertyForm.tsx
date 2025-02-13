@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { PropertyType } from "@/types";
 import { toast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
+import ImageUpload from "@/components/ImageUpload";
 
 const propertyFormSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -22,6 +23,7 @@ const propertyFormSchema = z.object({
   location: z.string().min(1, "Location is required"),
   status: z.string().min(1, "Status is required"),
   listing_type: z.string().min(1, "Listing type is required"),
+  images: z.array(z.string()).default([]),
 });
 
 type PropertyFormData = z.infer<typeof propertyFormSchema>;
@@ -47,6 +49,7 @@ export default function PropertyForm({ initialData, onSubmit, isLoading }: Prope
       location: initialData?.location || "",
       status: initialData?.status || "available",
       listing_type: initialData?.listing_type || "sale",
+      images: initialData?.images || [],
     },
   });
 
@@ -70,6 +73,24 @@ export default function PropertyForm({ initialData, onSubmit, isLoading }: Prope
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+        <FormField
+          control={form.control}
+          name="images"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Images</FormLabel>
+              <FormControl>
+                <ImageUpload
+                  onImagesChange={(urls) => field.onChange(urls)}
+                  initialImages={field.value}
+                  maxImages={5}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
         <FormField
           control={form.control}
           name="title"
