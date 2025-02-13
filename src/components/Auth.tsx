@@ -47,25 +47,6 @@ export default function Auth() {
     }
   };
 
-  const handleGoogleSignIn = async () => {
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: `${window.location.origin}/auth/callback`
-        }
-      });
-      
-      if (error) throw error;
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    }
-  };
-
   // Redirect if user is already logged in
   if (session) {
     return <Navigate to="/" replace />;
@@ -133,13 +114,6 @@ export default function Auth() {
                 Sign In
               </Button>
               <Button
-                variant="outline"
-                className="w-full"
-                onClick={handleGoogleSignIn}
-              >
-                Sign in with Google
-              </Button>
-              <Button
                 variant="link"
                 className="w-full"
                 onClick={() => setResetPasswordMode(true)}
@@ -168,13 +142,6 @@ export default function Auth() {
               />
               <Button className="w-full" onClick={() => handleSubmit('signup')}>
                 Sign Up
-              </Button>
-              <Button
-                variant="outline"
-                className="w-full"
-                onClick={handleGoogleSignIn}
-              >
-                Sign up with Google
               </Button>
             </div>
           </TabsContent>

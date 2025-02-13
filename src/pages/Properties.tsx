@@ -17,6 +17,7 @@ const Properties = () => {
     minPrice: '',
     maxPrice: '',
     bedrooms: '',
+    listingType: 'all' as 'all' | 'sale' | 'rent',
   });
   const [sortBy, setSortBy] = useState<'price_asc' | 'price_desc' | 'newest'>('newest');
   const { searchTerm, setSearchTerm } = useSearch('properties');
@@ -39,6 +40,9 @@ const Properties = () => {
       // Apply filters
       if (filters.type) {
         query = query.eq('property_type', filters.type);
+      }
+      if (filters.listingType !== 'all') {
+        query = query.eq('listing_type', filters.listingType);
       }
       if (filters.minPrice) {
         query = query.gte('price', parseFloat(filters.minPrice));

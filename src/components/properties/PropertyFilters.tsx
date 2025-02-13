@@ -4,6 +4,13 @@ import { type PropertyType } from '@/types';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 interface PropertyFiltersProps {
   searchTerm: string;
@@ -13,12 +20,14 @@ interface PropertyFiltersProps {
     minPrice: string;
     maxPrice: string;
     bedrooms: string;
+    listingType: 'all' | 'sale' | 'rent';
   };
   setFilters: React.Dispatch<React.SetStateAction<{
     type: PropertyType | '';
     minPrice: string;
     maxPrice: string;
     bedrooms: string;
+    listingType: 'all' | 'sale' | 'rent';
   }>>;
   sortBy: 'price_asc' | 'price_desc' | 'newest';
   setSortBy: React.Dispatch<React.SetStateAction<'price_asc' | 'price_desc' | 'newest'>>;
@@ -51,17 +60,6 @@ const PropertyFilters = ({
     }
   };
 
-  const clearFilters = () => {
-    setFilters({
-      type: '',
-      minPrice: '',
-      maxPrice: '',
-      bedrooms: '',
-    });
-    setSearchTerm('');
-    setSortBy('newest');
-  };
-
   const content = (
     <div className="space-y-4">
       <div>
@@ -79,31 +77,56 @@ const PropertyFilters = ({
       </div>
 
       <div>
-        <label className="block text-sm font-medium mb-2">Sort By</label>
-        <select
-          className="w-full p-2 rounded-lg border bg-white/50"
-          value={sortBy}
-          onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
+        <label className="block text-sm font-medium mb-2">Listing Type</label>
+        <Select
+          value={filters.listingType}
+          onValueChange={(value) => setFilters(prev => ({ ...prev, listingType: value as 'all' | 'sale' | 'rent' }))}
         >
-          <option value="newest">Newest First</option>
-          <option value="price_asc">Price: Low to High</option>
-          <option value="price_desc">Price: High to Low</option>
-        </select>
+          <SelectTrigger className="w-full bg-white/50">
+            <SelectValue placeholder="Select type" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Listings</SelectItem>
+            <SelectItem value="sale">For Sale</SelectItem>
+            <SelectItem value="rent">For Rent</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium mb-2">Sort By</label>
+        <Select
+          value={sortBy}
+          onValueChange={(value) => setSortBy(value as typeof sortBy)}
+        >
+          <SelectTrigger className="w-full bg-white/50">
+            <SelectValue placeholder="Sort by..." />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="newest">Newest First</SelectItem>
+            <SelectItem value="price_asc">Price: Low to High</SelectItem>
+            <SelectItem value="price_desc">Price: High to Low</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       <div>
         <label className="block text-sm font-medium mb-2">Type</label>
-        <select
-          className="w-full p-2 rounded-lg border bg-white/50"
+        <Select
           value={filters.type}
-          onChange={(e) => setFilters(prev => ({ ...prev, type: e.target.value as PropertyType | '' }))}
+          onValueChange={(value) => setFilters(prev => ({ ...prev, type: value as PropertyType | '' }))}
         >
-          <option value="">All Types</option>
-          <option value="apartment">Apartment</option>
-          <option value="villa">Villa</option>
-          <option value="office">Office</option>
-          <option value="land">Land</option>
-        </select>
+          <SelectTrigger className="w-full bg-white/50">
+            <SelectValue placeholder="Select type" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="">All Types</SelectItem>
+            <SelectItem value="apartment">Apartment</SelectItem>
+            <SelectItem value="villa">Villa</SelectItem>
+            <SelectItem value="office">Office</SelectItem>
+            <SelectItem value="land">Land</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
       
       <div>
@@ -127,26 +150,17 @@ const PropertyFilters = ({
           />
         </div>
       </div>
-      
-      <div>
-        <label className="block text-sm font-medium mb-2">Bedrooms</label>
-        <select
-          className="w-full p-2 rounded-lg border bg-white/50"
-          value={filters.bedrooms}
-          onChange={(e) => setFilters(prev => ({ ...prev, bedrooms: e.target.value }))}
-        >
-          <option value="">Any</option>
-          <option value="1">1+</option>
-          <option value="2">2+</option>
-          <option value="3">3+</option>
-          <option value="4">4+</option>
-        </select>
-      </div>
 
       <Button 
         variant="outline" 
         className="w-full flex items-center justify-center gap-2"
-        onClick={clearFilters}
+        onClick={() => setFilters({
+          type: '',
+          minPrice: '',
+          maxPrice: '',
+          bedrooms: '',
+          listingType: 'all'
+        })}
       >
         <X className="h-4 w-4" />
         Clear Filters
