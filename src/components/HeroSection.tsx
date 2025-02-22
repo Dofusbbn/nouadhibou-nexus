@@ -18,7 +18,7 @@ const HeroSection = () => {
   };
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center py-20">
+    <div className="relative min-h-[80vh] flex items-center justify-center">
       {/* Background Image */}
       <div className="absolute inset-0 overflow-hidden">
         <img 
@@ -26,7 +26,7 @@ const HeroSection = () => {
           alt="Modern building" 
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-primary/30 to-primary/10 backdrop-blur-[2px]" />
+        <div className="absolute inset-0 bg-black/40" />
       </div>
 
       {/* Content */}
@@ -42,7 +42,7 @@ const HeroSection = () => {
           </div>
 
           {/* Search Box */}
-          <div className="bg-white rounded-lg p-3 shadow-lg max-w-3xl mx-auto">
+          <div className="bg-white rounded-lg p-4 shadow-lg">
             {/* Toggle Buttons */}
             <div className="flex gap-2 mb-4">
               <button
