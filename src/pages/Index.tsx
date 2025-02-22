@@ -4,7 +4,7 @@ import CategorySection from '../components/CategorySection';
 
 const Index = () => {
   return (
-    <div className="min-h-screen pt-16">
+    <div className="min-h-screen">
       <HeroSection />
       <CategorySection />
     </div>
@@ -12,4 +12,3 @@ const Index = () => {
 };
 
 export default Index;
-
